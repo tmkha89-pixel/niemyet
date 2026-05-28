@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hướng dẫn</title>
+  <link rel="stylesheet" href="video.css" />
+</head>
+<body>
+  <main class="viewer-shell">
+    <section class="video-stage">
+      <iframe
+        id="videoFrame"
+        class="video-frame"
+        title="Google Drive video"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const rawId = (params.get("id") || "").trim();
+    const videoName = (params.get("name") || "").trim();
+    const frame = document.getElementById("videoFrame");
+    const emptyState = document.getElementById("emptyState");
+
+    if (!rawId) {
+      frame.hidden = true;
+      emptyState.hidden = false;
+    } else {
+      const videoId = rawId.replace(/[^a-zA-Z0-9_-]/g, "");
+      const embedUrl = new URL(`https://drive.google.com/file/d/${videoId}/preview`);
+
+      frame.src = embedUrl.toString();
+      
+      // Set title to video name or use video ID
+      document.title = videoName || `Drive Video ${videoId}`;
+    }
+  </script>
+</body>
+</html>
