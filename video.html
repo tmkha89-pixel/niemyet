@@ -3,41 +3,72 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hướng dẫn</title>
+  <title>Video Viewer</title>
   <link rel="stylesheet" href="video.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+    }
+    .video-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-  <main class="viewer-shell">
-    <section class="video-stage">
-      <iframe
-        id="videoFrame"
-        class="video-frame"
-        title="Google Drive video"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen
-        referrerpolicy="strict-origin-when-cross-origin"
-      ></iframe>
-    </section>
-  </main>
+  <div class="video-container">
+    <iframe
+      id="videoFrame"
+      title="Video player"
+      allow="autoplay; fullscreen; picture-in-picture"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+  </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const rawId = (params.get("id") || "").trim();
     const videoName = (params.get("name") || "").trim();
     const frame = document.getElementById("videoFrame");
-    const emptyState = document.getElementById("emptyState");
+
+    function extractYouTubeId(input) {
+      // Handle YouTube shorts URL: https://youtube.com/shorts/VIDEO_ID or https://www.youtube.com/shorts/VIDEO_ID
+      let match = input.match(/(?:youtube\.com\/shorts\/|youtu\.be\/)([^?&\s]+)/);
+      if (match) return match[1];
+
+      // Handle regular YouTube URL: https://www.youtube.com/watch?v=VIDEO_ID or https://youtu.be/VIDEO_ID
+      match = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^?&\s]+)/);
+      if (match) return match[1];
+
+      // If it's just an ID, return it
+      if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+
+      return null;
+    }
 
     if (!rawId) {
       frame.hidden = true;
-      emptyState.hidden = false;
     } else {
-      const videoId = rawId.replace(/[^a-zA-Z0-9_-]/g, "");
-      const embedUrl = new URL(`https://drive.google.com/file/d/${videoId}/preview`);
-
-      frame.src = embedUrl.toString();
+      const videoId = extractYouTubeId(rawId);
       
-      // Set title to video name or use video ID
-      document.title = videoName || `Drive Video ${videoId}`;
+      if (videoId) {
+        // YouTube embed URL with parameters to disable recommendations and enable autoplay
+        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&fs=1`;
+        frame.src = embedUrl;
+        document.title = videoName || `Video`;
+      } else {
+        frame.hidden = true;
+      }
     }
   </script>
 </body>
