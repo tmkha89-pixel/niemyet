@@ -31,6 +31,7 @@
       id="videoFrame"
       title="Video player"
       allow="autoplay; fullscreen; picture-in-picture"
+      autoPlay
       referrerpolicy="strict-origin-when-cross-origin"
     ></iframe>
   </div>
@@ -63,13 +64,49 @@
       
       if (videoId) {
         // YouTube embed URL with parameters to disable recommendations and enable autoplay
-        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&fs=1`;
+        const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&fs=1&enablejsapi=1`;
         frame.src = embedUrl;
         document.title = videoName || `Video`;
+		
+		setupAutoLandscape();
       } else {
         frame.hidden = true;
       }
     }
+	
+	function setupAutoLandscape() {
+    const container = document.querySelector('.video-container');
+
+    // Lắng nghe sự kiện thay đổi trạng thái Fullscreen (Hỗ trợ đa trình duyệt)
+    const fullscreenEvents = [
+      'fullscreenchange',
+      'webkitfullscreenchange',
+      'mozfullscreenchange',
+      'MSFullscreenChange'
+    ];
+
+    fullscreenEvents.forEach(eventType => {
+      document.addEventListener(eventType, () => {
+        const isFullscreen = document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement;
+
+        if (isFullscreen) {
+          // Ép xoay ngang nếu trình duyệt thiết bị hỗ trợ Screen Orientation API
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape')
+              .catch(err => console.log("Không thể ép xoay màn hình tự động: ", err));
+          }
+        } else {
+          // Trả về tự do khi thoát Fullscreen
+          if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+          }
+        }
+      });
+    });
+  }
   </script>
 </body>
 </html>
