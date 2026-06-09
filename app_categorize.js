@@ -26,25 +26,26 @@ function createProcedureRow(index, procedure) {
   const nameCell = document.createElement('td');
   nameCell.textContent = procedure.PROCEDURE_NAME;
 
-  const qrCell = document.createElement('td');
-  qrCell.className = 'qr-cell';
-  const canvas = document.createElement('canvas');
-  canvas.width = 96;
-  canvas.height = 96;
-  canvas.dataset.link = procedure.DRIVE_FILE_LINK;
-  canvas.setAttribute('aria-label', `QR code for ${procedure.PROCEDURE_NAME}`);
-  qrCell.appendChild(canvas);
+  // const qrCell = document.createElement('td');
+  // qrCell.className = 'qr-cell';
+  // const canvas = document.createElement('canvas');
+  // canvas.width = 96;
+  // canvas.height = 96;
+  // canvas.dataset.link = procedure.url;
+  // canvas.setAttribute('aria-label', `QR code for ${procedure.PROCEDURE_NAME}`);
+  // qrCell.appendChild(canvas);
 
   const linkCell = document.createElement('td');
   const link = document.createElement('a');
   link.className = 'link-button';
-  link.href = procedure.DRIVE_FILE_LINK;
+  link.href = procedure.url;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
   link.textContent = 'Mở link';
   linkCell.appendChild(link);
 
-  row.append(indexCell, nameCell, qrCell, linkCell);
+  // row.append(indexCell, nameCell, qrCell, linkCell);
+  row.append(indexCell, nameCell, linkCell);
   return row;
 }
 
@@ -149,12 +150,21 @@ function renderCategorySectionById(category_id, procedures) {
     const tableWrapper = document.createElement('div');
     tableWrapper.className = 'table-wrapper';
     const table = document.createElement('table');
+    // table.innerHTML = `
+    //   <thead>
+    //     <tr>
+    //       <th>STT</th>
+    //       <th>Tên thủ tục</th>
+    //       <th>QR</th>
+    //       <th>Link</th>
+    //     </tr>
+    //   </thead>
+    // `;
     table.innerHTML = `
       <thead>
         <tr>
           <th>STT</th>
           <th>Tên thủ tục</th>
-          <th>QR</th>
           <th>Link</th>
         </tr>
       </thead>
